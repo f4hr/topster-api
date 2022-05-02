@@ -1,0 +1,55 @@
+{
+  "name": "topster-api",
+  "version": "0.1.0",
+  "description": "Topster API",
+  "homepage": "https://github.com/f4hr/topster-api#readme",
+  "bugs": {
+    "url": "https://github.com/f4hr/topster-api/issues",
+    "email": "ilyaf4hr@gmail.com"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Ilya Fakhrutdinov",
+    "email": "ilyaf4hr@gmail.com",
+    "url": "https://github.com/f4hr"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/f4hr/topster-api.git"
+  },
+  "scripts": {
+    "prestart": "npm run build",
+    "start": "node dist/app.js",
+    "serve": "npx nodemon",
+    "prebuild": "rm -rf dist",
+    "build": "NODE_ENV=production npx tsc"
+  },
+  "dependencies": {
+    "@fastify/cors": "^7.0.0",
+    "@fastify/rate-limit": "^6.0.0",
+    "@fastify/sensible": "^4.0.0",
+    "axios": "^0.26.1",
+    "dotenv": "^16.0.0",
+    "fastify": "^3.28.0",
+    "pino-pretty": "^7.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.29",
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
+    "eslint": "^8.13.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.6.2",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
+  },
+  "engines": {
+    "node": "16.x"
+  },
+  "private": true
+}

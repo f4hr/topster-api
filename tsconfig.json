@@ -1,0 +1,15 @@
+{
+  "include": ["src/**/*.ts", ".eslintrc.cjs", "webpack.*.cjs"],
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "sourceMap": false,
+    "noImplicitAny": true,
+    "strict": true,
+    "lib": ["ES2020"],
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "target": "ES2020",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  }
+}
