@@ -19,7 +19,7 @@
   },
   "scripts": {
     "prestart": "npm run build",
-    "start": "node dist/app.js",
+    "start": "node bin/app.js",
     "serve": "npx nodemon",
     "prebuild": "rm -rf dist",
     "build": "NODE_ENV=production npx tsc"
