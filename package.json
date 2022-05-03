@@ -18,8 +18,7 @@
     "url": "https://github.com/f4hr/topster-api.git"
   },
   "scripts": {
-    "prestart": "npm run build",
-    "start": "node bin/app.js",
+    "start": "ts-node src/app.ts",
     "serve": "npx nodemon",
     "prebuild": "rm -rf dist",
     "build": "NODE_ENV=production npx tsc"
