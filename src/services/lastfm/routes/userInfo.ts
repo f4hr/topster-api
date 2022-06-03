@@ -1,9 +1,15 @@
 import axios from 'axios';
 
-import type { QuerystringType } from '../routes';
 import { API_METHODS, buildApiUrl } from '../utils';
 
-type RawResponseType = {
+import type { ResponseError } from '../../../types';
+
+export type LastfmUserInfoQuery = {
+  [key: string]: any;
+  user: string;
+};
+
+type RawUserInfoResponse = {
   user: {
     id: string;
     name: string;
@@ -26,7 +32,7 @@ type RawResponseType = {
   };
 };
 
-type ResponseType = {
+export type UserInfoResponse = {
   user: {
     id: string;
     name: string;
@@ -48,19 +54,19 @@ type ResponseType = {
 
 const requiredFields = ['user'];
 
-const validate = (query: QuerystringType) => {
-  const errors: string[] = [];
+const validate = (query: LastfmUserInfoQuery) => {
+  const errors: ResponseError[] = [];
 
   const missingFields = requiredFields.filter((f) => !query[f]);
 
   if (missingFields.length) {
-    errors.push(`Missing required fields: "${missingFields.join(', ')}"`);
+    errors.push({ message: `Missing required fields: "${missingFields.join(', ')}"` });
   }
 
   return errors;
 };
 
-const transformResponse = (data: RawResponseType): ResponseType => {
+const transformResponse = (data: RawUserInfoResponse): UserInfoResponse => {
   const {
     user: {
       id,
@@ -98,8 +104,8 @@ const transformResponse = (data: RawResponseType): ResponseType => {
   };
 };
 
-export default async (query: QuerystringType) => {
-  const response: { errors: string[]; data: any } = {
+export default async (query: LastfmUserInfoQuery) => {
+  const response: { errors: ResponseError[]; data: any } = {
     errors: [],
     data: null,
   };
@@ -109,7 +115,7 @@ export default async (query: QuerystringType) => {
   if (errors.length) response.errors = errors;
 
   return axios
-    .get<RawResponseType>(buildApiUrl({ method: API_METHODS.USER_INFO }), {
+    .get<RawUserInfoResponse>(buildApiUrl({ method: API_METHODS.USER_INFO }), {
       params: { user },
     })
     .then(({ data }) => ({ ...response, data: transformResponse(data) }));

@@ -1,23 +1,17 @@
-import axios from 'axios';
+import { API_METHODS, API_PERIODS } from '../utils';
+import userTopItemsHandler from './userTopItems';
 
-import type { QuerystringType } from '../routes';
-import { API_METHODS, API_PERIODS, buildApiUrl } from '../utils';
+import type { ResponseError, TopArtists } from '../../../types';
+import type { LastfmTopItemsQuery } from './userTopItems';
 
-type RawArtist = {
+type LastfmArtist = {
   name: string;
   playcount: number;
   url: string;
   image: { '#text': string }[];
 };
 
-type NormalizedArtist = {
-  name: string;
-  playcount: number;
-  url: string;
-  images: { url: string }[];
-};
-
-type RawResponseType = {
+type LastfmTopArtistsResponse = {
   topartists: {
     artist: any[];
     '@attr': {
@@ -29,38 +23,28 @@ type RawResponseType = {
   };
 };
 
-type ResponseType = {
-  items: NormalizedArtist[];
-  attributes: {
-    total: number;
-    page: number;
-    totalPages: number;
-    perPage: number;
-  };
-};
-
 const requiredFields = ['user'];
 
-const validate = (query: QuerystringType) => {
+const validate = (query: LastfmTopItemsQuery) => {
   const { period } = query;
-  const errors: string[] = [];
+  const errors: ResponseError[] = [];
 
   const missingFields = requiredFields.filter((f) => !query[f]);
 
   if (missingFields.length) {
-    errors.push(`Missing required fields: "${missingFields.join(', ')}"`);
+    errors.push({ message: `Missing required fields: "${missingFields.join(', ')}"` });
   }
 
   if (period && !API_PERIODS.includes(period)) {
-    errors.push(
-      `Invalid value "${period}" for period param. Available values are [${API_PERIODS.join(', ')}]`
-    );
+    errors.push({
+      message: `Invalid value "${period}" for period`,
+    });
   }
 
   return errors;
 };
 
-const transformResponse = (data: RawResponseType): ResponseType => {
+const transformResponse = (data: LastfmTopArtistsResponse): TopArtists => {
   const {
     topartists: {
       artist: artists,
@@ -68,7 +52,8 @@ const transformResponse = (data: RawResponseType): ResponseType => {
     },
   } = data;
 
-  const normalizedArtists = artists.map(({ name, playcount, url, image }: RawArtist) => ({
+  const normalizedArtists = artists.map(({ name, playcount, url, image }: LastfmArtist) => ({
+    id: url,
     name,
     playcount,
     url,
@@ -86,19 +71,8 @@ const transformResponse = (data: RawResponseType): ResponseType => {
   };
 };
 
-export default async (query: QuerystringType) => {
-  const response: { errors: string[]; data: any } = {
-    errors: [],
-    data: null,
-  };
-  const errors = validate(query);
-  const { user, period = '6month', limit, page: currentPage } = query;
-
-  if (errors.length) response.errors = errors;
-
-  return axios
-    .get<RawResponseType>(buildApiUrl({ method: API_METHODS.TOP_ARTISTS }), {
-      params: { user, period, limit, page: currentPage },
-    })
-    .then(({ data }) => ({ ...response, data: transformResponse(data) }));
-};
+export default userTopItemsHandler<LastfmTopArtistsResponse, TopArtists>(
+  API_METHODS.TOP_ARTISTS,
+  validate,
+  transformResponse
+);

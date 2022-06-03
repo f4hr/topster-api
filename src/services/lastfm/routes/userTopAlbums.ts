@@ -1,23 +1,21 @@
-import axios from 'axios';
+import { API_METHODS, API_PERIODS } from '../utils';
+import userTopItemsHandler from './userTopItems';
 
-import type { QuerystringType } from '../routes';
-import { API_METHODS, API_PERIODS, buildApiUrl } from '../utils';
+import type { ResponseError, TopAlbums } from '../../../types';
+import type { LastfmTopItemsQuery } from './userTopItems';
 
-type RawAlbum = {
+type LastfmAlbum = {
+  mbid: string | null;
   name: string;
+  artist: {
+    name: string;
+  };
   playcount: number;
   url: string;
   image: { '#text': string }[];
 };
 
-type NormalizedAlbum = {
-  name: string;
-  playcount: number;
-  url: string;
-  images: { url: string }[];
-};
-
-type RawResponseType = {
+type LastfmTopAlbumsResponse = {
   topalbums: {
     album: any[];
     '@attr': {
@@ -29,38 +27,26 @@ type RawResponseType = {
   };
 };
 
-type ResponseType = {
-  items: NormalizedAlbum[];
-  attributes: {
-    total: number;
-    page: number;
-    totalPages: number;
-    perPage: number;
-  };
-};
-
 const requiredFields = ['user'];
 
-const validate = (query: QuerystringType) => {
+export const validate = (query: LastfmTopItemsQuery) => {
   const { period } = query;
-  const errors: string[] = [];
+  const errors: ResponseError[] = [];
 
   const missingFields = requiredFields.filter((f) => !query[f]);
 
   if (missingFields.length) {
-    errors.push(`Missing required fields: "${missingFields.join(', ')}"`);
+    errors.push({ message: `Missing required fields: "${missingFields.join(', ')}"` });
   }
 
   if (period && !API_PERIODS.includes(period)) {
-    errors.push(
-      `Invalid value "${period}" for period param. Available values are [${API_PERIODS.join(', ')}]`
-    );
+    errors.push({ message: `Invalid value "${period}" for period param` });
   }
 
   return errors;
 };
 
-const transformResponse = (data: RawResponseType): ResponseType => {
+const transformResponse = (data: LastfmTopAlbumsResponse): TopAlbums => {
   const {
     topalbums: {
       album: albums,
@@ -68,8 +54,10 @@ const transformResponse = (data: RawResponseType): ResponseType => {
     },
   } = data;
 
-  const normalizedAlbums = albums.map(({ name, playcount, url, image }: RawAlbum) => ({
+  const normalizedAlbums = albums.map(({ name, playcount, url, image, artist }: LastfmAlbum) => ({
+    id: url,
     name,
+    artist: artist.name,
     playcount,
     url,
     images: image.map((img) => ({ url: img['#text'] })),
@@ -86,19 +74,8 @@ const transformResponse = (data: RawResponseType): ResponseType => {
   };
 };
 
-export default async (query: QuerystringType) => {
-  const response: { errors: string[]; data: any } = {
-    errors: [],
-    data: null,
-  };
-  const errors = validate(query);
-  const { user, period = '6month', limit, page: currentPage } = query;
-
-  if (errors.length) response.errors = errors;
-
-  return axios
-    .get<RawResponseType>(buildApiUrl({ method: API_METHODS.TOP_ALBUMS }), {
-      params: { user, period, limit, page: currentPage },
-    })
-    .then(({ data }) => ({ ...response, data: transformResponse(data) }));
-};
+export default userTopItemsHandler<LastfmTopAlbumsResponse, TopAlbums>(
+  API_METHODS.TOP_ALBUMS,
+  validate,
+  transformResponse
+);
