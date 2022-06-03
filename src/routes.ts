@@ -3,6 +3,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { ResponseError } from './types';
 
 import addLastfmRoutes from './services/lastfm/routes';
+import addSpotifyRoutes from './services/spotify/routes';
 
 type ResponseType = {
   status: 'ok' | 'error';
@@ -48,6 +49,7 @@ const resourceHandler =
 
 export default (app: FastifyInstance) => {
   addLastfmRoutes(app, resourceHandler);
+  addSpotifyRoutes(app, resourceHandler);
 
   app.get('/', (_req, reply) => {
     reply.notFound();
