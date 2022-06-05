@@ -13,6 +13,11 @@ type SpotifyArtist = Artist & {
   };
   genres: string[];
   popularity: number;
+  images: {
+    url: string;
+    width: number;
+    height: number;
+  }[];
 };
 
 type SpotifyTopArtistsResponse = {
@@ -28,11 +33,14 @@ type SpotifyTopArtistsResponse = {
 const transformResponse = (data: SpotifyTopArtistsResponse): TopArtists => {
   const { items } = data;
 
+  const sortImages = (images: SpotifyArtist['images']) =>
+    [...images].sort((a, b) => a.width - b.width);
+
   const normalizedItems = items.map(({ id, name, popularity, images }) => ({
     id,
     name,
     playcount: popularity,
-    images: images.map(({ url }) => ({ url })),
+    images: sortImages(images).map(({ url }) => ({ url })),
   }));
 
   return {
