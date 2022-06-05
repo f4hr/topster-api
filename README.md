@@ -2,7 +2,7 @@
 
 API gateway for [Topster](https://github.com/f4hr/topster) app.
 
-## Current API Wrappers
+## Available API Wrappers
 
 - [Last.fm](https://www.last.fm/api)
 - [Spotify](https://developer.spotify.com/documentation/web-api/)
