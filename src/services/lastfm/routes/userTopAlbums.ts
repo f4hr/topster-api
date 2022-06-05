@@ -1,8 +1,7 @@
-import { API_METHODS, API_PERIODS } from '../utils';
+import { API_METHODS } from '../utils';
 import userTopItemsHandler from './userTopItems';
 
-import type { ResponseError, TopAlbums } from '../../../types';
-import type { LastfmTopItemsQuery } from './userTopItems';
+import type { TopAlbums } from '../../../types';
 
 type LastfmAlbum = {
   mbid: string | null;
@@ -25,25 +24,6 @@ type LastfmTopAlbumsResponse = {
       perPage: number;
     };
   };
-};
-
-const requiredFields = ['user'];
-
-export const validate = (query: LastfmTopItemsQuery) => {
-  const { period } = query;
-  const errors: ResponseError[] = [];
-
-  const missingFields = requiredFields.filter((f) => !query[f]);
-
-  if (missingFields.length) {
-    errors.push({ message: `Missing required fields: "${missingFields.join(', ')}"` });
-  }
-
-  if (period && !API_PERIODS.includes(period)) {
-    errors.push({ message: `Invalid value "${period}" for period param` });
-  }
-
-  return errors;
 };
 
 const transformResponse = (data: LastfmTopAlbumsResponse): TopAlbums => {
@@ -76,6 +56,5 @@ const transformResponse = (data: LastfmTopAlbumsResponse): TopAlbums => {
 
 export default userTopItemsHandler<LastfmTopAlbumsResponse, TopAlbums>(
   API_METHODS.TOP_ALBUMS,
-  validate,
   transformResponse
 );

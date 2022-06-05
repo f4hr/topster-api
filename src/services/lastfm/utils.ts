@@ -11,16 +11,21 @@ export const API_METHODS: { [key: string]: LastfmTopItemsType } = {
   TOP_ARTISTS: 'user.gettopartists',
 };
 
-export const API_PERIODS: PeriodType[] = [
-  'overall',
-  '7day',
-  '1month',
-  '3month',
-  '6month',
-  '12month',
-];
+export const API_PERIODS: { [key: string]: PeriodType } = {
+  ALL: 'overall',
+  D7: '7day',
+  M1: '1month',
+  M3: '3month',
+  M6: '6month',
+  Y1: '12month',
+};
 
-export const buildApiUrl = (params: { [key: string]: string }) => {
+type Params = {
+  [key: string]: any;
+  method: LastfmTopItemsType;
+};
+
+const buildApiUrl = (params: Params) => {
   const baseUrl = [API_URL, PREFIX].join('/');
   const url = new URL(baseUrl);
 
@@ -34,6 +39,9 @@ export const buildApiUrl = (params: { [key: string]: string }) => {
   return url.toString();
 };
 
-export default {
-  buildApiUrl,
+const routes = {
+  userInfo: () => buildApiUrl({ method: 'user.getinfo' }),
+  topItems: (resource: LastfmTopItemsType) => buildApiUrl({ method: resource }),
 };
+
+export default routes;

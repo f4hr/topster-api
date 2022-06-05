@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-import { API_METHODS, buildApiUrl } from '../utils';
+import routes from '../utils';
 
 import type { ResponseError } from '../../../types';
 
-export type LastfmUserInfoQuery = {
+type LastfmUserInfoQuery = {
   [key: string]: any;
   user: string;
 };
@@ -32,7 +32,7 @@ type RawUserInfoResponse = {
   };
 };
 
-export type UserInfoResponse = {
+type UserInfoResponse = {
   user: {
     id: string;
     name: string;
@@ -52,12 +52,12 @@ export type UserInfoResponse = {
   };
 };
 
-const requiredFields = ['user'];
+const REQUIRED_FIELDS: string[] = ['user'];
 
 const validate = (query: LastfmUserInfoQuery) => {
   const errors: ResponseError[] = [];
 
-  const missingFields = requiredFields.filter((f) => !query[f]);
+  const missingFields = REQUIRED_FIELDS.filter((f) => !query[f]);
 
   if (missingFields.length) {
     errors.push({ message: `Missing required fields: "${missingFields.join(', ')}"` });
@@ -109,14 +109,13 @@ export default async (query: LastfmUserInfoQuery) => {
     errors: [],
     data: null,
   };
-  const errors = validate(query);
-  const { user } = query;
 
+  const errors = validate(query);
   if (errors.length) response.errors = errors;
 
+  const { user } = query;
+
   return axios
-    .get<RawUserInfoResponse>(buildApiUrl({ method: API_METHODS.USER_INFO }), {
-      params: { user },
-    })
+    .get<RawUserInfoResponse>(routes.userInfo(), { params: { user } })
     .then(({ data }) => ({ ...response, data: transformResponse(data) }));
 };
