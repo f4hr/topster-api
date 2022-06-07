@@ -29,27 +29,27 @@ const resourceHandler =
     try {
       const { errors, data } = await handler(request.query);
 
-      if (errors.length) {
-        // TODO: return all errors
-        const [firstError] = errors;
-
-        switch (firstError.code) {
-          case 401:
-            if (firstError.code === 401) reply.unauthorized(firstError.message);
-            break;
-          case 404:
-            if (firstError.code === 404) reply.notFound(firstError.message);
-            break;
-          default:
-            reply.badRequest(firstError.message);
-        }
+      if (errors.length === 0) {
+        reply.header('Content-Type', 'application/json; charset=utf-8');
+        reply.send({
+          ...data,
+          status: 'ok',
+        });
       }
 
-      reply.header('Content-Type', 'application/json; charset=utf-8');
-      reply.send({
-        ...data,
-        status: 'ok',
-      });
+      // TODO: return all errors
+      const [firstError] = errors;
+
+      switch (firstError.code) {
+        case 401:
+          reply.unauthorized(firstError.message);
+          break;
+        case 404:
+          reply.notFound(firstError.message);
+          break;
+        default:
+          reply.badRequest(firstError.message);
+      }
     } catch (error: any) {
       reply.internalServerError(error.message);
     }
