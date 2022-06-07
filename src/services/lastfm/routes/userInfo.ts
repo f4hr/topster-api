@@ -57,10 +57,10 @@ const REQUIRED_FIELDS: string[] = ['user'];
 const validate = (query: LastfmUserInfoQuery) => {
   const errors: ResponseError[] = [];
 
-  const missingFields = REQUIRED_FIELDS.filter((f) => !query[f]);
+  const missingFields = REQUIRED_FIELDS.filter((f) => !query[f] || query[f] === '');
 
   if (missingFields.length) {
-    errors.push({ message: `Missing required fields: "${missingFields.join(', ')}"` });
+    errors.push({ message: `Missing required fields: ${missingFields.join(', ')}` });
   }
 
   return errors;
@@ -111,11 +111,26 @@ export default async (query: LastfmUserInfoQuery) => {
   };
 
   const errors = validate(query);
-  if (errors.length) response.errors = errors;
+  if (errors.length) {
+    response.errors = errors;
+    return response;
+  }
 
   const { user } = query;
 
   return axios
     .get<RawUserInfoResponse>(routes.userInfo(), { params: { user } })
-    .then(({ data }) => ({ ...response, data: transformResponse(data) }));
+    .then(({ data }) => ({ ...response, data: transformResponse(data) }))
+    .catch((error) => {
+      if (error.response) {
+        if (error.response.status === 404) {
+          return {
+            ...response,
+            errors: [...response.errors, { code: 404, message: `User '${user}' not found` }],
+          };
+        }
+      }
+
+      throw error;
+    });
 };

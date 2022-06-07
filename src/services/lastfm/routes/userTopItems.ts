@@ -20,10 +20,10 @@ const validateTopItems = (query: LastfmTopItemsQuery) => {
   const { period } = query;
   const errors: ResponseError[] = [];
 
-  const missingFields = REQUIRED_FIELDS.filter((f) => !query[f]);
+  const missingFields = REQUIRED_FIELDS.filter((f) => !query[f] || query[f] === '');
 
   if (missingFields.length) {
-    errors.push({ message: `Missing required fields: "${missingFields.join(', ')}"` });
+    errors.push({ message: `Missing required fields: ${missingFields.join(', ')}` });
   }
 
   if (period && !Object.values(API_PERIODS).includes(period)) {
