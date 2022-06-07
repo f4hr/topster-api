@@ -33,8 +33,16 @@ const resourceHandler =
         // TODO: return all errors
         const [firstError] = errors;
 
-        if (firstError.code === 401) reply.unauthorized(firstError.message);
-        reply.badRequest(`${firstError.code}: ${firstError.message}`);
+        switch (firstError.code) {
+          case 401:
+            if (firstError.code === 401) reply.unauthorized(firstError.message);
+            break;
+          case 404:
+            if (firstError.code === 404) reply.notFound(firstError.message);
+            break;
+          default:
+            reply.badRequest(`${firstError.code ?? 400}: ${firstError.message}`);
+        }
       }
 
       reply.header('Content-Type', 'application/json; charset=utf-8');
