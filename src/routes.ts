@@ -41,7 +41,7 @@ const resourceHandler =
             if (firstError.code === 404) reply.notFound(firstError.message);
             break;
           default:
-            reply.badRequest(`${firstError.code ?? 400}: ${firstError.message}`);
+            reply.badRequest(firstError.message);
         }
       }
 
