@@ -30,6 +30,14 @@ const DEFAULT_PARAMS = {
   PAGE: 1 as LastfmTopItemsNormalizedQuery['page'],
 };
 
+const normalizeQuery = (query: LastfmTopItemsQuery): LastfmTopItemsNormalizedQuery => ({
+  user: query.user ?? '',
+  period: query.period ?? DEFAULT_PARAMS.PERIOD,
+  limit: query.limit ?? DEFAULT_PARAMS.LIMIT,
+  offset: query.offset ?? DEFAULT_PARAMS.OFFSET,
+  page: query.page ?? DEFAULT_PARAMS.PAGE,
+});
+
 const REQUIRED_FIELDS: string[] = ['user'];
 const validateTopItems = (query: LastfmTopItemsNormalizedQuery) => {
   const { period, limit, page, offset } = query;
@@ -72,13 +80,7 @@ const handler =
       data: null,
     };
 
-    const normalizedQuery: LastfmTopItemsNormalizedQuery = {
-      user: query.user ?? '',
-      period: query.period ?? DEFAULT_PARAMS.PERIOD,
-      limit: query.limit ?? DEFAULT_PARAMS.LIMIT,
-      offset: query.offset ?? DEFAULT_PARAMS.OFFSET,
-      page: query.page ?? DEFAULT_PARAMS.PAGE,
-    };
+    const normalizedQuery = normalizeQuery(query);
 
     // validate
     const errors = validateTopItems(normalizedQuery);

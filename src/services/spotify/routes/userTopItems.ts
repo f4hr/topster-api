@@ -30,6 +30,14 @@ const DEFAULT_PARAMS = {
   OFFSET: 0 as SpotifyTopItemsNormalizedQuery['offset'],
 };
 
+const normalizeQuery = (query: SpotifyTopItemsQuery): SpotifyTopItemsNormalizedQuery => ({
+  accessToken: query.access_token ?? '',
+  type: query.type ?? DEFAULT_PARAMS.TYPE,
+  timeRange: query.time_range ?? DEFAULT_PARAMS.TIME_RANGE,
+  limit: query.limit ?? DEFAULT_PARAMS.LIMIT,
+  offset: query.offset ?? DEFAULT_PARAMS.OFFSET,
+});
+
 const REQUIRED_FIELDS: string[] = ['accessToken'];
 const validateTopItems = (query: SpotifyTopItemsNormalizedQuery) => {
   const { timeRange, limit, offset } = query;
@@ -68,13 +76,7 @@ const handler =
       data: null,
     };
 
-    const normalizedQuery: SpotifyTopItemsNormalizedQuery = {
-      accessToken: query.access_token ?? '',
-      type: query.type ?? DEFAULT_PARAMS.TYPE,
-      timeRange: query.time_range ?? DEFAULT_PARAMS.TIME_RANGE,
-      limit: query.limit ?? DEFAULT_PARAMS.LIMIT,
-      offset: query.offset ?? DEFAULT_PARAMS.OFFSET,
-    };
+    const normalizedQuery = normalizeQuery(query);
 
     // validate
     const errors = validateTopItems(normalizedQuery);
