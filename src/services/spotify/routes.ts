@@ -1,11 +1,6 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 
-import userTopArtistsHandler from './routes/userTopArtists';
-import userTopTracksHandler from './routes/userTopTracks';
-
-import type { ResourceHandler } from '../../routes';
-
-export default (app: FastifyInstance, handler: ResourceHandler) => {
+export default (app: FastifyInstance) => {
   app.get('/api/v1/spotify/auth', async (req, reply) => {
     // TODO: fix TypeScript error
     // @ts-ignore:next-line
@@ -26,8 +21,4 @@ export default (app: FastifyInstance, handler: ResourceHandler) => {
       reply.send({ access_token: token.access_token });
     }
   );
-
-  app.get('/api/v1/spotify/top-artists', handler(userTopArtistsHandler));
-
-  app.get('/api/v1/spotify/top-tracks', handler(userTopTracksHandler));
 };

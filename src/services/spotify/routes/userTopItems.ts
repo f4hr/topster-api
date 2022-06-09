@@ -5,7 +5,7 @@ import routes, { TIME_RANGES } from '../utils';
 import type { ResponseError } from '../../../types';
 import type { TopItemsType, TimeRange } from '../utils';
 
-type SpotifyTopItemsQuery = {
+export type SpotifyTopItemsQuery = {
   [key: string]: string | number | undefined | TopItemsType | TimeRange;
   access_token: string;
   type?: TopItemsType;

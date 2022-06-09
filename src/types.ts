@@ -1,3 +1,12 @@
+export type Service = {
+  [key: string]: any;
+  getServiceName: () => string;
+  getUser?: (query: any) => Promise<any>;
+  getTopArtists?: (query: any) => Promise<any>;
+  getTopAlbums?: (query: any) => Promise<any>;
+  getTopTracks?: (query: any) => Promise<any>;
+};
+
 export type ResponseError = {
   message: string;
   code?: number;
